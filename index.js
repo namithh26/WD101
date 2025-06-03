@@ -42,28 +42,34 @@ document.addEventListener("DOMContentLoaded", function () {
   form.addEventListener("submit", function (event) {
     event.preventDefault();
 
-    const name = document.getElementById("name").value.trim();
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
-    const dateInput = document.getElementById("dob").value;
-    const checkbox = document.getElementById("checkbox").checked;
+    const nameInput = document.getElementById("name");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const dobInput = document.getElementById("dob");
+    const checkboxInput = document.getElementById("checkbox");
 
-    // Show DOB error or clear it
+    const name = nameInput.value.trim();
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
+    const dob = dobInput.value;
+    const checkbox = checkboxInput.checked;
+
+    // Reset error message
     dobError.style.display = "none";
 
-    if (!dateInput) {
+    // Validate DOB
+    if (!dob) {
       dobError.textContent = "Please select a valid date.";
       dobError.style.display = "block";
       return;
     }
 
-    const dob = new Date(dateInput);
+    const dobDate = new Date(dob);
     const today = new Date();
-    let age = today.getFullYear() - dob.getFullYear();
-    const monthDiff = today.getMonth() - dob.getMonth();
-    const dayDiff = today.getDate() - dob.getDate();
+    let age = today.getFullYear() - dobDate.getFullYear();
+    const monthDiff = today.getMonth() - dobDate.getMonth();
+    const dayDiff = today.getDate() - dobDate.getDate();
 
-    // Adjust age if birthday hasn't occurred yet this year
     if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
       age--;
     }
@@ -73,16 +79,20 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    // If all validations pass, proceed to save data
-    const newData = { name, email, password, dob: dateInput, checkbox };
+    // Create new entry
+    const newData = { name, email, password, dob, checkbox };
 
+    // Add to list and save to localStorage
     formDataList.push(newData);
     localStorage.setItem("formDataList", JSON.stringify(formDataList));
 
-    form.reset(); // Reset form fields
-    updateTable(); // Update table
+    // Reset form fields
+    form.reset();
+
+    // Update table immediately
+    updateTable();
   });
 
-  // Initial table population
+  // Initial load of table
   updateTable();
 });
